@@ -120,5 +120,9 @@
 			{% endif %}
 			]]></add>
 		</operation>
+		<operation>
+			<search><![CDATA[var url = 'index.php?route=common/filemanager&user_token={{ user_token }}&directory={{ directory }}';]]></search>
+			<add position="replace"><![CDATA[var url = 'index.php?route=common/filemanager&user_token={{ user_token }}&directory={{ directory }}&ck_callback_info={{ ck_callback_info }}';]]></add>
+		</operation>
 	</file>
 </modification>
