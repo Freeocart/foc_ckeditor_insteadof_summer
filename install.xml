@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>FOC: CKEditor instead of Summer</name>
+	<code>foc_ckeditor_insteadof_summer</code>
+	<version>1.0</version>
+	<link>https://freeocart.ru</link>
+	<author>freeocart</author>
+
+	<!-- replace summernote code with ckeditor -->
+	<file path="admin/view/template/{catalog/information_form.twig,catalog/product_form.twig,catalog/category_form.twig,blog/article_form.twig}">
+		<operation info="replace summernote attributes with ckeditor">
+			<search><![CDATA[data-toggle="summernote"]]></search>
+			<add position="replace"><![CDATA[data-toggle="ckeditor"]]></add>
+		</operation>
+		<operation info="remove summernote scripts/styles">
+			<search><![CDATA[<script type="text/javascript" src="view/javascript/summernote/summernote.js"></script>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+		<operation info="remove summernote scripts/styles">
+			<search><![CDATA[<link href="view/javascript/summernote/summernote.css" rel="stylesheet" />]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+		<operation info="remove summernote scripts/styles">
+			<search><![CDATA[<script type="text/javascript" src="view/javascript/summernote/summernote-image-attributes.js"></script>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+		<operation info="remove summernote scripts/styles">
+			<search><![CDATA[<script type="text/javascript" src="view/javascript/summernote/opencart.js"></script>]]></search>
+			<add position="replace"><![CDATA[]]></add>
+		</operation>
+	</file>
+
+	<!-- initialize ckeditor -->
+	<file path="admin/view/template/{catalog/product_form.twig,catalog/category_form.twig,catalog/information_form.twig,extension/module/html.twig,blog/article_form.twig}">
+		<operation info="Add ckeditor js code">
+			<search index="0"><![CDATA[<script type="text/javascript">]]></search>
+			<add position="before"><![CDATA[<script type="text/javascript" src="view/javascript/ckeditor/ckeditor.js"></script>
+			<script>
+				$(function () {
+          $('[data-toggle=\'ckeditor\']').each(function() {
+            CKEDITOR.replace($(this).attr('id'), {
+              filebrowserBrowseUrl: '/admin/view/javascript/filemanager/dialog.php?type=2&editor=ckeditor&akey={{ user_token }}'
+            });
+          })
+        })
+
+				// ckeditor and opencart filemanager integration
+				CKEDITOR.on('dialogDefinition', function (event) {
+          if (event.data.name === 'image') {
+            var editor = event.editor;
+            var dialogDefinition = event.data.definition;
+            var dialogName = event.data.name;
+
+            var tabCount = dialogDefinition.contents.length;
+            for (var i = 0; i < tabCount; i++) {
+              var browseButton = dialogDefinition.contents[i].get('browse');
+
+              if (browseButton !== null) {
+                browseButton.hidden = false;
+                browseButton.onClick = function(e) {
+                  $('#modal-image').remove();
+                  $.ajax({
+                    url: 'index.php?route=common/filemanager&user_token={{ user_token }}&ck_callback_info='+this.filebrowser.target,
+                    dataType: 'html',
+                    success: function(html) {
+                      $('body').append('<div id="modal-image" style="z-index: 10020;" class="modal">' + html + '</div>');
+                      $('#modal-image').modal('show');
+                    }
+                  });
+                }
+              }
+            }
+          }
+        });
+			</script>]]></add>
+		</operation>
+	</file>
+
+	<!-- filemanager additionals -->
+	<file path="admin/controller/common/filemanager.php">
+		<operation info="Add url parameter 2 (1 instance)">
+			<search><![CDATA[$data['thumb'] = $this->request->get['thumb'];]]></search>
+			<add position="after" offset="3"><![CDATA[
+			if (isset($this->request->get['ck_callback_info'])) {
+				$data['ck_callback_info'] = $this->request->get['ck_callback_info'];
+			} else {
+				$data['ck_callback_info'] = false;
+			}]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$url .= '&thumb=' . $this->request->get['thumb'];]]></search>
+			<add position="after" offset="1"><![CDATA[
+			if (isset($this->request->get['ck_callback_info'])) {
+				$url .= '&ck_callback_info=' . $this->request->get['ck_callback_info'];
+			}
+			]]></add>
+		</operation>
+	</file>
+	<file path="admin/view/template/common/filemanager.twig">
+		<operation>
+			<search index="0"><![CDATA[{% if target %}]]></search>
+			<add position="before"><![CDATA[
+			{% if ck_callback_info %}
+			$('a.thumbnail').on('click', function(e) {
+				e.preventDefault();
+
+				dialog = CKEDITOR.dialog.getCurrent();
+				var targetElement = '{{ ck_callback_info }}' || null;
+
+				if (targetElement) {
+					var target = targetElement.split( ':' );
+					dialog.setValueOf( target[ 0 ], target[ 1 ], $(this).attr('href') );
+				}
+				else {
+					console.error('Wrong ck_callback_info parameter format!')
+				}
+
+				$('#modal-image').modal('hide');
+			});
+			{% endif %}
+			]]></add>
+		</operation>
+	</file>
+</modification>
