@@ -2,7 +2,7 @@
 
 Simple module for Opencart 3.x to replace default wysiwyg editor known as `Summernote` with `CKEditor`
 
-[!CKEditor](./screens/1.png)
+![CKEditor](./screens/1.png)
 
 ### Installation
 
