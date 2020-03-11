@@ -6,7 +6,7 @@ Simple module for Opencart 3.x to replace default wysiwyg editor known as `Summe
 
 ### Installation
 
-1. Download [ready to install OCMod]()
+1. Download [ready to install OCMod](https://github.com/Freeocart/foc_ckeditor_insteadof_summer/releases)
 1. Install it with default `Extension installer`
 1. Update modifications in `Extensions/Modifications`
 
