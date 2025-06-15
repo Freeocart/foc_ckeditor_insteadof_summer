@@ -7,7 +7,7 @@
 	<author>freeocart</author>
 
 	<!-- replace summernote code with ckeditor -->
-	<file path="admin/view/template/{catalog/information_form.twig,catalog/product_form.twig,catalog/category_form.twig,blog/article_form.twig}">
+	<file path="admin/view/template/{catalog/information_form.twig,catalog/product_form.twig,catalog/category_form.twig,extension/module/html.twig,blog/article_form.twig}">
 		<operation info="replace summernote attributes with ckeditor">
 			<search><![CDATA[data-toggle="summernote"]]></search>
 			<add position="replace"><![CDATA[data-toggle="ckeditor"]]></add>
@@ -31,7 +31,7 @@
 	</file>
 
 	<!-- initialize ckeditor -->
-	<file path="admin/view/template/{catalog/product_form.twig,catalog/category_form.twig,catalog/information_form.twig,extension/module/html.twig,blog/article_form.twig}">
+	<file path="admin/view/template/{catalog/information_form.twig,catalog/product_form.twig,catalog/category_form.twig,extension/module/html.twig,blog/article_form.twig}">
 		<operation info="Add ckeditor js code">
 			<search index="0"><![CDATA[<script type="text/javascript">]]></search>
 			<add position="before"><![CDATA[<script type="text/javascript" src="view/javascript/ckeditor/ckeditor.js"></script>
